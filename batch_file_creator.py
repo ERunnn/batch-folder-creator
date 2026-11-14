@@ -14,8 +14,7 @@
      （留空则该项仅用序号，如 01-）
   5) 参数可存为用户模板（存于 exe 旁边的 templates.json，便携），无内置预设
 
-核心仅依赖 Python 标准库 (tkinter)；仅「投喂作者」弹窗里的收款码缩放会可选使用 Pillow，
-未安装 Pillow 时自动回退到原生尺寸显示。
+仅依赖 Python 标准库 (tkinter)，无需任何第三方包。
 """
 
 import json
@@ -523,7 +522,6 @@ class App(tk.Tk):
             pass
         self._feed_photos = []  # 保持 PhotoImage 引用，避免被 GC 后图片消失
 
-        QR_SIZE = 200
         body = ttk.Frame(dlg, padding=14)
         body.pack(fill="both", expand=True)
 
@@ -541,14 +539,8 @@ class App(tk.Tk):
             col.pack(side="left", padx=12)
             path = _asset_path(img)
             if path:
-                # 强制缩放到同一尺寸，避免两张码大小不一
-                try:
-                    from PIL import Image, ImageTk
-                    im = Image.open(path).convert("RGBA")
-                    im = im.resize((QR_SIZE, QR_SIZE), Image.LANCZOS)
-                    photo = ImageTk.PhotoImage(im)
-                except Exception:
-                    photo = tk.PhotoImage(file=path)
+                # 两张码已在 assets/ 内预先统一为 200×200，直接读取即可等大显示
+                photo = tk.PhotoImage(file=path)
                 self._feed_photos.append(photo)
                 pic = ttk.Label(col, image=photo)
             else:

@@ -127,7 +127,7 @@ py -3.12 -m PyInstaller --onefile --windowed --clean --icon folder_plus.ico --ad
 - **已知局限**：`cn_num` 仅 1–99，≥100 回退阿拉伯数字；名称清洗不查清单内重名，同名时后者被跳过；覆盖=确保存在而不清空；仅 Windows（`os.startfile` / `iconbitmap` / Windows 非法字符集）；`templates.json` 在只读目录保存会失败并弹错；模板无导入导出、无版本迁移
 - **同类工具**：[FolderMaker](https://github.com/fayaznaim/FolderMaker)（C# 单 exe，固定前缀加数字，无格式模板串 / 中文数字 / 参数模板）、[bulk-folder-creator](https://github.com/Harikumarthapa/bulk-folder-creator)（浏览器 Web 工具，导出 ZIP/.bat，不直接建目录）、[汇帮批量建文件夹](https://www.huibang168.com/createfile/detail/tWz9XuukLTcl) 等国产闭源工具、[Bulk Rename Utility](https://www.bulkrenameutility.co.uk/)（主业重命名）、PowerShell / Excel + .bat（系统自带，无界面）；2026-11-14 检索，**未逐一安装实测**
 - **许可**：代码 [MIT](LICENSE) · Copyright (c) 2026 Huang Yirun
-- **更新记录**：本仓库暂无独立 `CHANGELOG.md`，版本与改动以 git 提交历史为准
+- **更新记录**：以 git 提交历史为准
 
 <!-- AI-BRIEF:START
 定位/受众：Windows 单文件 GUI，按「序号前缀 + 逐行填写名」批量建空文件夹搭项目骨架；面向个人项目目录规范化，无 CLI/库/API，入口 batch_file_creator.py 的 main() 直接起 Tk。
