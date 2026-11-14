@@ -141,5 +141,5 @@ py -3.12 -m PyInstaller --onefile --windowed --clean --icon folder_plus.ico --ad
 局限3：仅 Windows（os.startfile / iconbitmap / Windows 非法字符集）；templates.json 写在 exe 同目录，目录只读时保存模板失败并弹错。
 局限4：仓库无 tests/，多数断言为临时内联脚本、不可复跑，仅 docs/make_screenshot.py 可复跑；模板无导入导出、无版本迁移。
 维护注意：make_icon.py 手工拼 ICO 二进制，因 PIL 的 save(sizes=..., append_images=...) 只写首帧，曾导致图标仅 16px 而糊；_on_canvas_configure 须同时钉 rows_frame 宽度，否则逐行 Entry 溢出卡片。
-git 历史：本仓库初始化时仅 1 条提交，无「近 20 条提交」可引用；事实来自当前文件、README.md 及 docs/ 下截图。
+git 历史：截至 2026-11-14 共 9 条提交（初始提交 → README 按同结构重写 → 界面居中、收款码预置 200x200、移除运行时 PIL 等修复）；简报事实取自当前文件、README.md 与 docs/ 截图。
 AI-BRIEF:END -->
