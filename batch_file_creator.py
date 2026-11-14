@@ -14,7 +14,8 @@
      （留空则该项仅用序号，如 01-）
   5) 参数可存为用户模板（存于 exe 旁边的 templates.json，便携），无内置预设
 
-仅依赖 Python 标准库 (tkinter)，无需任何第三方包。
+核心仅依赖 Python 标准库 (tkinter)；仅「投喂作者」弹窗里的收款码缩放会可选使用 Pillow，
+未安装 Pillow 时自动回退到原生尺寸显示。
 """
 
 import json
@@ -497,8 +498,19 @@ class App(tk.Tk):
         dlg.title("投喂 Token")
         dlg.transient(self)
         dlg.grab_set()
+        # 用软件 logo 替换 Tk 默认的羽毛图标
+        try:
+            if getattr(sys, "frozen", False):
+                dlg.iconbitmap(sys.executable)
+            else:
+                ico = os.path.join(self.base_dir, "folder_plus.ico")
+                if os.path.exists(ico):
+                    dlg.iconbitmap(ico)
+        except Exception:
+            pass
         self._feed_photos = []  # 保持 PhotoImage 引用，避免被 GC 后图片消失
 
+        QR_SIZE = 200
         body = ttk.Frame(dlg, padding=14)
         body.pack(fill="both", expand=True)
 
@@ -516,7 +528,14 @@ class App(tk.Tk):
             col.pack(side="left", padx=12)
             path = _asset_path(img)
             if path:
-                photo = tk.PhotoImage(file=path)
+                # 强制缩放到同一尺寸，避免两张码大小不一
+                try:
+                    from PIL import Image, ImageTk
+                    im = Image.open(path).convert("RGBA")
+                    im = im.resize((QR_SIZE, QR_SIZE), Image.LANCZOS)
+                    photo = ImageTk.PhotoImage(im)
+                except Exception:
+                    photo = tk.PhotoImage(file=path)
                 self._feed_photos.append(photo)
                 pic = ttk.Label(col, image=photo)
             else:
@@ -527,11 +546,17 @@ class App(tk.Tk):
         ok = ttk.Button(body, text="谢谢老板 (*^▽^*)", command=dlg.destroy)
         ok.pack(pady=(12, 0))
 
-        # 居中到父窗口
+        # 居中：优先相对父窗口；若超出屏幕则相对屏幕居中
         dlg.update_idletasks()
-        px = self.winfo_rootx() + (self.winfo_width() - dlg.winfo_width()) // 2
-        py = self.winfo_rooty() + (self.winfo_height() - dlg.winfo_height()) // 2
-        dlg.geometry(f"+{max(px, 0)}+{max(py, 0)}")
+        sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
+        dw, dh = dlg.winfo_width(), dlg.winfo_height()
+        px = self.winfo_rootx() + (self.winfo_width() - dw) // 2
+        py = self.winfo_rooty() + (self.winfo_height() - dh) // 2
+        if px < 0 or px + dw > sw:
+            px = max((sw - dw) // 2, 0)
+        if py < 0 or py + dh > sh:
+            py = max((sh - dh) // 2, 0)
+        dlg.geometry(f"+{px}+{py}")
 
 
 def main():
