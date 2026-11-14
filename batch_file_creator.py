@@ -99,30 +99,6 @@ def _asset_path(name: str):
     return p if os.path.exists(p) else None
 
 
-def _attach_tooltip(widget, text):
-    """给控件挂一个极简悬浮提示（本机 tkinter 无 Tooltip，故自实现）。"""
-    tip = [None]
-
-    def enter(_evt):
-        if tip[0] is not None:
-            return
-        x = widget.winfo_rootx() + 16
-        y = widget.winfo_rooty() + widget.winfo_height() + 4
-        tip[0] = tk.Toplevel(widget)
-        tip[0].wm_overrideredirect(True)
-        tip[0].wm_geometry(f"+{x}+{y}")
-        tk.Label(tip[0], text=text, background="#ffffe0", relief="solid",
-                 borderwidth=1, font=("Microsoft YaHei UI", 9)).pack()
-
-    def leave(_evt):
-        if tip[0] is not None:
-            tip[0].destroy()
-            tip[0] = None
-
-    widget.bind("<Enter>", enter)
-    widget.bind("<Leave>", leave)
-
-
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -261,11 +237,8 @@ class App(tk.Tk):
         self.open_btn = ttk.Button(btn_row, text="打开目标文件夹",
                                    command=self._open_dir, state="disabled")
         self.open_btn.pack(side="left")
-        # 投喂作者入口（仿 V2Live / 台词匠：常驻「请喝咖啡」按钮）
-        feed_btn = ttk.Button(btn_row, text="投喂作者 (๑´ㅂ`๑)",
-                              command=self._open_feed_dialog)
-        feed_btn.pack(side="right", padx=(8, 0))
-        _attach_tooltip(feed_btn, "请作者喝杯咖啡～")
+        # 彩蛋：Ctrl+Shift+F 打开投喂弹窗（不摆在界面上）
+        self.bind_all("<Control-Shift-F>", lambda _e: self._open_feed_dialog())
 
         # 9) 日志
         ttk.Label(frm, text="运行日志：").grid(row=9, column=0, sticky="w", **pad)

@@ -10,15 +10,19 @@
 
 双击即用，不需要安装 Python，也不需要任何运行库。
 
-下面三张都是程序**真实启动后抓取**的画面，点图片看原图。
+下面几张都是程序**真实启动后抓取**的画面。
 
-<table>
-<tr>
-<td width="33%" align="center" valign="top"><strong>完整界面</strong><br><sub>加载模板后的状态</sub><br><a href="docs/screenshot-templates.png"><img src="docs/screenshot-templates.png" width="280" alt="完整 GUI 截图"></a></td>
-<td width="33%" align="center" valign="top"><strong>模板操作区</strong><br><sub>存 / 载 / 删命名模板</sub><br><a href="docs/screenshot-template-detail.png"><img src="docs/screenshot-template-detail.png" width="280" alt="模板操作区局部截图"></a></td>
-<td width="33%" align="center" valign="top"><strong>生成结果</strong><br><sub>6 个带序号的文件夹</sub><br><a href="docs/example-folders.png"><img src="docs/example-folders.png" width="280" alt="生成结果示例"></a></td>
-</tr>
-</table>
+**完整界面**（加载模板后的状态）
+
+![完整 GUI 截图](docs/screenshot-templates.png)
+
+**模板操作区**（存 / 载 / 删命名模板）
+
+![模板操作区局部截图](docs/screenshot-template-detail.png)
+
+**生成结果**（6 个带序号的文件夹）
+
+![生成结果示例](docs/example-folders.png)
 
 **English** — *Batch Folder Creator* is a Windows single-file GUI that creates empty folders in bulk by a numeric prefix plus a list of names you fill line by line. Python + tkinter, no install, no network.
 **你可能在找**：批量建文件夹 · 批量新建目录 · 项目目录骨架 · 序号命名文件夹 · batch create folders
@@ -33,7 +37,7 @@
 <ul>
 <li><a href="#序号格式">序号格式</a></li>
 <li><a href="#参数模板">参数模板</a></li>
-<li><a href="#投喂作者">投喂作者</a></li>
+<li><a href="#一个小彩蛋">一个小彩蛋</a></li>
 </ul>
 </details>
 </li>
@@ -125,9 +129,9 @@ Windows 文件夹名非法字符（`" < > : / \ | ? *`）会被自动移除。
 
 模板目前没有导入 / 导出界面，也没有版本迁移；老版本模板里多出来的字段会被忽略。
 
-### 投喂作者
+### 一个小彩蛋
 
-界面底部右侧有「投喂作者 (๑´ㅂ`๑)」按钮，点开弹窗展示微信 / 支付宝收款码，文案「请作者喝杯咖啡～」。收款码图片在 `assets/qr_wechat.png`、`assets/qr_alipay.png`，由界面弹窗读取；图片缺失时弹窗显示「（收款码未随仓库分发）」。若重新打包，需在 `build.bat` 里保留 `--add-data "assets;assets"`，否则 exe 内弹窗看不到收款码。
+按下 `Ctrl + Shift + F`，会弹出一个小窗口，放着微信 / 支付宝收款码（文案「请作者喝杯咖啡～」）——这是给用得顺手的人留的隐藏入口，不在界面上摆出来。收款码在 `assets/qr_wechat.png`、`assets/qr_alipay.png`；重新打包需保留 `--add-data "assets;assets"`，否则弹窗显示「（收款码未随仓库分发）」。
 
 ## 获取与运行
 
@@ -154,9 +158,9 @@ py -3.12 -m PyInstaller --onefile --windowed --clean --icon folder_plus.ico --ad
 ## 常见问题
 
 <details>
-<summary>底部的「投喂作者」按钮 / 收款码看不到？</summary>
+<summary>「投喂作者」在哪？怎么触发？</summary>
 
-按钮加在**源码**里，不是直接塞进 exe。两种情况看不到：① 线上（GitHub）目前是初始提交，不含这次改动；② 本地 `dist\批量建文件夹.exe` 是改动前打的旧包。要看到，要么 `py -3.12 batch_file_creator.py` 跑源码，要么重新打包（见「获取与运行」）。重新打包必须带 `--add-data "assets;assets"`，否则 exe 内弹窗只显示「（收款码未随仓库分发）」。
+它现在是个隐藏彩蛋，不在界面上：在程序窗口里按 `Ctrl + Shift + F` 即可弹出微信 / 支付宝收款码。收款码已打进 exe（打包时带 `--add-data "assets;assets"`）；若某环境缺图，弹窗会显示「（收款码未随仓库分发）」。
 
 </details>
 
@@ -220,7 +224,7 @@ py -3.12 -m PyInstaller --onefile --windowed --clean --icon folder_plus.ico --ad
 差异1（可核实）：序号前缀是可编辑模板串，FORMAT_PRESETS 支持 {n}、{n:02d}、{cn} 中文数字与自定义串；检索到的同类 https://github.com/fayaznaim/FolderMaker 与 https://github.com/Harikumarthapa/bulk-folder-creator 多为固定前缀加数字或补零，此差异未经逐一安装实测。
 差异2（可核实）：名称清单是逐行 Entry 列表（rebuild_rows），非多行文本框粘贴；整套参数可存/载/删为命名模板（_collect_config / _apply_config，文件 templates.json，无内置预设）。
 技术：仅 Python 标准库 tkinter；PyInstaller 单文件且无控制台窗口；成品 dist/批量建文件夹.exe 约 10 MB；构建 build.bat；图标 make_icon.py 生成 folder_plus.ico。
-功能补充（可核实）：界面底部有「投喂作者」按钮（_open_feed_dialog），弹窗读取 assets/qr_wechat.png 与 assets/qr_alipay.png；打包需 --add-data "assets;assets" 才能随 exe 走，否则显示「收款码未随仓库分发」。
+功能补充（可核实）：投喂收款码不再做常驻按钮，改为隐藏彩蛋——Ctrl+Shift+F 触发 _open_feed_dialog，弹窗读取 assets/qr_wechat.png 与 assets/qr_alipay.png；打包需 --add-data "assets;assets" 才能随 exe 走，否则显示「收款码未随仓库分发」。
 已实测：纯函数断言、临时目录真实 mkdir、ICO 二进制 9 帧解析、py_compile 均通过；docs/make_screenshot.py 真实启动 GUI 并抓 docs/screenshot-templates.png，内含模板回填/预览断言；并修复预览把 {n:02d} 误判缺占位符的 bug。
 未验证：人工交互（鼠标点击、滚轮滚动、DPI 缩放）未经人手逐项验证；exe 图标在任务栏/桌面的显示效果未验证；同类工具对比仅基于网页检索。
 局限1：cn_num 仅 1..99，>=100 回退阿拉伯数字；sanitize 直接删非法字符且不检测清单内重名，同名时后项被跳过。
