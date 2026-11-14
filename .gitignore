@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# PyInstaller 中间产物（dist/ 下的 exe 保留，供直接下载）
+build/
+*.spec
+
+# 运行时数据：由 exe 自行生成，不入库
+templates.json
+dist/templates.json
+
+# 临时预览图
+_*.png
