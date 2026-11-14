@@ -124,6 +124,19 @@ class App(tk.Tk):
         self._on_format_change()      # 初始化自定义框状态
         self.rebuild_rows()
         self._refresh_template_list()
+        self._center_window()          # 启动即居中到屏幕中央
+
+    # ---------------- 居中 ----------------
+    def _center_window(self):
+        self.update_idletasks()
+        sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
+        dw, dh = self.winfo_width(), self.winfo_height()
+        if dw <= 1 or dh <= 1:        # 尺寸尚未就绪，下一帧再试
+            self.after(50, self._center_window)
+            return
+        px = max((sw - dw) // 2, 0)
+        py = max((sh - dh) // 2, 0)
+        self.geometry(f"+{px}+{py}")
 
     # ---------------- 图标 ----------------
     def _set_icon(self):
