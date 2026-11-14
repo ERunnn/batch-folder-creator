@@ -88,6 +88,41 @@ def format_prefix(n: int, tmpl: str) -> str:
             return t
 
 
+def _asset_path(name: str):
+    """返回随仓库分发的资源文件路径（收款码等）。
+    打包后资源在 sys._MEIPASS；开发时在本脚本目录下的 assets/。"""
+    if getattr(sys, "frozen", False):
+        base = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+    else:
+        base = os.path.dirname(os.path.abspath(__file__))
+    p = os.path.join(base, "assets", name)
+    return p if os.path.exists(p) else None
+
+
+def _attach_tooltip(widget, text):
+    """给控件挂一个极简悬浮提示（本机 tkinter 无 Tooltip，故自实现）。"""
+    tip = [None]
+
+    def enter(_evt):
+        if tip[0] is not None:
+            return
+        x = widget.winfo_rootx() + 16
+        y = widget.winfo_rooty() + widget.winfo_height() + 4
+        tip[0] = tk.Toplevel(widget)
+        tip[0].wm_overrideredirect(True)
+        tip[0].wm_geometry(f"+{x}+{y}")
+        tk.Label(tip[0], text=text, background="#ffffe0", relief="solid",
+                 borderwidth=1, font=("Microsoft YaHei UI", 9)).pack()
+
+    def leave(_evt):
+        if tip[0] is not None:
+            tip[0].destroy()
+            tip[0] = None
+
+    widget.bind("<Enter>", enter)
+    widget.bind("<Leave>", leave)
+
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -226,6 +261,11 @@ class App(tk.Tk):
         self.open_btn = ttk.Button(btn_row, text="打开目标文件夹",
                                    command=self._open_dir, state="disabled")
         self.open_btn.pack(side="left")
+        # 投喂作者入口（仿 V2Live / 台词匠：常驻「请喝咖啡」按钮）
+        feed_btn = ttk.Button(btn_row, text="投喂作者 (๑´ㅂ`๑)",
+                              command=self._open_feed_dialog)
+        feed_btn.pack(side="right", padx=(8, 0))
+        _attach_tooltip(feed_btn, "请作者喝杯咖啡～")
 
         # 9) 日志
         ttk.Label(frm, text="运行日志：").grid(row=9, column=0, sticky="w", **pad)
@@ -475,6 +515,48 @@ class App(tk.Tk):
         folder = self.var_dir.get().strip() or os.getcwd()
         if os.path.isdir(folder):
             os.startfile(folder)
+
+    def _open_feed_dialog(self):
+        """投喂 Token：微信 / 支付宝收款码（仿 V2Live 的可爱向弹窗）。"""
+        dlg = tk.Toplevel(self)
+        dlg.title("投喂 Token")
+        dlg.transient(self)
+        dlg.grab_set()
+        self._feed_photos = []  # 保持 PhotoImage 引用，避免被 GC 后图片消失
+
+        body = ttk.Frame(dlg, padding=14)
+        body.pack(fill="both", expand=True)
+
+        msg = ttk.Label(
+            body,
+            text="如果这个小工具帮到了你，\n欢迎投喂作者一个 Token 续续命 (๑•̀ㅂ•́)و✧",
+            justify="center")
+        msg.pack(pady=(0, 12))
+
+        rowd = ttk.Frame(body)
+        rowd.pack()
+        for img, name, kao in (("qr_wechat.png", "微信", "(๑´ㅂ`๑)"),
+                               ("qr_alipay.png", "支付宝", "(≧▽≦)")):
+            col = ttk.Frame(rowd)
+            col.pack(side="left", padx=12)
+            path = _asset_path(img)
+            if path:
+                photo = tk.PhotoImage(file=path)
+                self._feed_photos.append(photo)
+                pic = ttk.Label(col, image=photo)
+            else:
+                pic = ttk.Label(col, text="（收款码未随仓库分发）")
+            pic.pack()
+            ttk.Label(col, text=f"{name} {kao}", justify="center").pack(pady=(8, 0))
+
+        ok = ttk.Button(body, text="谢谢老板 (*^▽^*)", command=dlg.destroy)
+        ok.pack(pady=(12, 0))
+
+        # 居中到父窗口
+        dlg.update_idletasks()
+        px = self.winfo_rootx() + (self.winfo_width() - dlg.winfo_width()) // 2
+        py = self.winfo_rooty() + (self.winfo_height() - dlg.winfo_height()) // 2
+        dlg.geometry(f"+{max(px, 0)}+{max(py, 0)}")
 
 
 def main():

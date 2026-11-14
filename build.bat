@@ -10,7 +10,7 @@ if %errorlevel%==0 (
     set PY=python
 )
 
-%PY% -m PyInstaller --onefile --windowed --clean --icon "folder_plus.ico" --name "批量建文件夹" batch_file_creator.py
+%PY% -m PyInstaller --onefile --windowed --clean --icon "folder_plus.ico" --name "批量建文件夹" --add-data "assets;assets" batch_file_creator.py
 
 echo.
 echo 打包完成，exe 位于 dist\批量建文件夹.exe
