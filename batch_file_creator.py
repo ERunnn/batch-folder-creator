@@ -102,6 +102,7 @@ def _asset_path(name: str):
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.withdraw()               # 先隐藏：构建并定位后再显示，避免左上角闪一下
         self.title("批量建文件夹工具")
 
         # 双击 exe 时 cwd 即 exe 所在目录；脚本模式下为启动目录
@@ -123,19 +124,17 @@ class App(tk.Tk):
         self._on_format_change()      # 初始化自定义框状态
         self.rebuild_rows()
         self._refresh_template_list()
-        self._center_window()          # 启动即居中到屏幕中央
+        self._center_and_show()        # 定位到屏幕中央后再显示
 
     # ---------------- 居中 ----------------
-    def _center_window(self):
+    def _center_and_show(self):
         self.update_idletasks()
+        w, h = self.winfo_reqwidth(), self.winfo_reqheight()
         sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
-        dw, dh = self.winfo_width(), self.winfo_height()
-        if dw <= 1 or dh <= 1:        # 尺寸尚未就绪，下一帧再试
-            self.after(50, self._center_window)
-            return
-        px = max((sw - dw) // 2, 0)
-        py = max((sh - dh) // 2, 0)
-        self.geometry(f"+{px}+{py}")
+        px = max((sw - w) // 2, 0)
+        py = max((sh - h) // 2, 0)
+        self.geometry(f"{w}x{h}+{px}+{py}")
+        self.deiconify()
 
     # ---------------- 图标 ----------------
     def _set_icon(self):
@@ -507,9 +506,9 @@ class App(tk.Tk):
     def _open_feed_dialog(self):
         """投喂 Token：微信 / 支付宝收款码（仿 V2Live 的可爱向弹窗）。"""
         dlg = tk.Toplevel(self)
+        dlg.withdraw()                # 先隐藏，定位后再显示，避免闪一下
         dlg.title("投喂 Token")
         dlg.transient(self)
-        dlg.grab_set()
         # 用软件 logo 替换 Tk 默认的羽毛图标
         try:
             if getattr(sys, "frozen", False):
@@ -551,17 +550,19 @@ class App(tk.Tk):
         ok = ttk.Button(body, text="谢谢老板 (*^▽^*)", command=dlg.destroy)
         ok.pack(pady=(12, 0))
 
-        # 居中：优先相对父窗口；若超出屏幕则相对屏幕居中
+        # 居中：优先相对父窗口；若超出屏幕则相对屏幕居中；定位后再显示
         dlg.update_idletasks()
         sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
-        dw, dh = dlg.winfo_width(), dlg.winfo_height()
+        dw, dh = dlg.winfo_reqwidth(), dlg.winfo_reqheight()
         px = self.winfo_rootx() + (self.winfo_width() - dw) // 2
         py = self.winfo_rooty() + (self.winfo_height() - dh) // 2
         if px < 0 or px + dw > sw:
             px = max((sw - dw) // 2, 0)
         if py < 0 or py + dh > sh:
             py = max((sh - dh) // 2, 0)
-        dlg.geometry(f"+{px}+{py}")
+        dlg.geometry(f"{dw}x{dh}+{px}+{py}")
+        dlg.deiconify()
+        dlg.grab_set()
 
 
 def main():
