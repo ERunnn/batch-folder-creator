@@ -1,6 +1,6 @@
 # 批量建文件夹工具 · Batch Folder Creator
 
-[![License](https://img.shields.io/github/license/ERun-3/batch-folder-creator?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/github/license/ERunnn/batch-folder-creator?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue?style=flat-square)](#项目简介)
 [![Built with](https://img.shields.io/badge/built%20with-Python%20%2B%20tkinter-2ea44f?style=flat-square)](#技术栈)
 
@@ -192,7 +192,7 @@ py -3.12 -m PyInstaller --onefile --windowed --clean --icon folder_plus.ico --ad
 
 **反馈与贡献**
 
-- 遇到问题请到 [Issues](https://github.com/ERun-3/batch-folder-creator/issues) 提交，附上出错截图、复现步骤与 Windows 版本。
+- 遇到问题请到 [Issues](https://github.com/ERunnn/batch-folder-creator/issues) 提交，附上出错截图、复现步骤与 Windows 版本。
 - 欢迎 Pull Request；说明改动影响的行为即可，本仓库没有独立的自检测试套件（仅 `docs/make_screenshot.py` 可复跑）。
 - 「投喂作者」入口与收款码做法参考自同作者的 [subtitle-puzzle](https://github.com/ERun-3/subtitle-puzzle) 项目。
 
