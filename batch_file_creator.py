@@ -115,8 +115,10 @@ class App(tk.Tk):
             self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.templates_path = os.path.join(self.base_dir, "templates.json")
 
-        # 逐行名称输入框集合
+        # 逐行名称输入框集合；_names 是名称的持久缓存，
+        # 避免分步修改「数量」时中间态重建把已填内容丢掉
         self.name_entries = []
+        self._names = []
 
         self._build_vars()
         self._build_ui()
@@ -124,6 +126,7 @@ class App(tk.Tk):
         self._on_format_change()      # 初始化自定义框状态
         self.rebuild_rows()
         self._refresh_template_list()
+        self._update_preview()         # 首屏即显示示例（原来要改动参数才出现）
         self._center_and_show()        # 定位到屏幕中央后再显示
 
     # ---------------- 居中 ----------------
@@ -273,8 +276,15 @@ class App(tk.Tk):
         self.rows_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def rebuild_rows(self):
-        # 保留已有填写（按索引），便于调整数量时不丢失
-        old = [e.get() for e in self.name_entries]
+        # 先把当前控件的值同步回持久缓存（按索引覆盖、只增不减）。
+        # 关键：分步修改「数量」（清空→逐字符输入）会触发多次重建，
+        # 中间态 count=0/1 时控件已被销毁，若只从当前控件取旧值就会永久丢失。
+        for i, e in enumerate(self.name_entries):
+            name = e.get()
+            if i < len(self._names):
+                self._names[i] = name
+            else:
+                self._names.append(name)
         for child in self.rows_frame.winfo_children():
             child.destroy()
         self.name_entries = []
@@ -297,8 +307,8 @@ class App(tk.Tk):
             ttk.Label(row, text=prefix, anchor="w").pack(
                 side="left", padx=(0, 6))
             ent = ttk.Entry(row)
-            if i < len(old):
-                ent.insert(0, old[i])
+            if i < len(self._names):
+                ent.insert(0, self._names[i])
             ent.pack(side="left", fill="x", expand=True)
             self.name_entries.append(ent)
 
@@ -356,6 +366,9 @@ class App(tk.Tk):
             if i < len(names):
                 ent.delete(0, "end")
                 ent.insert(0, names[i])
+        # 载入模板是「整体替换」：缓存同步并裁剪到当前行数，
+        # 否则之后再改数量会串回上一份配置里的旧名称
+        self._names = [e.get() for e in self.name_entries]
 
         self._on_format_change()
         self._update_preview()
