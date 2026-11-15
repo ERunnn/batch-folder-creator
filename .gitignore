@@ -12,3 +12,6 @@ dist/templates.json
 
 # 临时预览图
 _*.png
+
+# 跑测工具证据目录（human-flow-tester 生成，体积大、不入版本库）
+hft-runs/
